@@ -1,6 +1,6 @@
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import db from "./db"
-import bcrypt from 'bcrypt'
 
 export const createTokenForUser = (userId: string) => {
   const token = jwt.sign({ id: userId }, process.env.SECRET!)
@@ -26,9 +26,11 @@ export const getUserFromToken = async (header?: string) => {
     where: { id:id  },
     select: {
       id: true,
+      email: true,
+      isAdmin:true,
       firstName: true,
       lastName: true,
-      email: true,
+      cart:true
     },
   });
   return user;
@@ -67,7 +69,7 @@ export const signup = async ({
   lastName: string;
 }) => {
   const hashpwd = await hashPassword(password);
-
+  
   const user = await db.user.create({
     data: {
       email: email,
@@ -76,6 +78,7 @@ export const signup = async ({
       lastName: lastName,
     },
   });
+  await db.cart.create({data:{userId:user.id}})
   const token = createTokenForUser(user.id);
   return { user, token };
 };
