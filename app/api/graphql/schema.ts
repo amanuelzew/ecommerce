@@ -52,10 +52,10 @@ const schema=`#graphql
     password:String!
   }
   input signupUserInput{
-    email:String!
-    password:String!
     firstName:String!
     lastName:String!
+    email:String!
+    password:String!
   }
   input addToCartInput{
     productID:ID!
