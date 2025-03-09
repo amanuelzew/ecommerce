@@ -5,21 +5,29 @@ import { SigninMutation } from '@/gql/signinMutation'
 import { setToken } from '@/utils/token'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
+import { User } from '@/types'
+import { useUserStore } from '@/context/userContext'
+
 
 const SignupPage = () => {
+    const { createUser } = useUserStore();
     const [_, signin] = useMutation(SigninMutation)
     const router = useRouter()
     const [state, setState] = useState({ email: '', password: '', })
     const [loading, setLoading] = useState(false)
 
     const handleSignup = async (e: FormEvent) => {
-        
         e.preventDefault()
         setLoading(true)
         const result = await signin({ input: state })
-        if (result.data.signin) {
-          setToken(result.data.signin.token)
+        const data:User=result.data.signin
+        if (data) {
+          setToken(data.token)
           setState({ email: '', password: '' })
+          createUser(data)
+          if(data.isAdmin==true)
+          router.push('/admin')
+          else
           router.push('/')
         }
     }

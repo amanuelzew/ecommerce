@@ -25,16 +25,10 @@ const resolvers = {
             return ctx.user
         },
         products: async (_: any, __: any, ctx: GQLContext) => {
-            if (!ctx.user)
-                throw new GraphQLError("unauthorized", { extensions: { code: "401" } })
-
             const products = await db.product.findMany()
             return products
         },
         product: async (_: any, { id }: { id: string }, ctx: GQLContext) => {
-            if (!ctx.user)
-                throw new GraphQLError("unauthorized", { extensions: { code: "401" } })
-
             const product = await db.product.findMany({ where: { id: id } })
             return product[0]
         },
