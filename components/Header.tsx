@@ -3,7 +3,6 @@
 
 import Link from "next/link"
 import { useState } from "react"
-//import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, User, Menu, X, Search } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { removeToken } from "@/utils/token"
 import { useUserStore } from "@/context/userContext"
+import { useCartStore } from "@/context/cartContext"
 
 
 export const navItem = [
@@ -34,12 +34,14 @@ export const navItem = [
 export function Header() {
     //const { cart } = useCart()
     const {user,removeUser}=useUserStore()
+    const {cart}=useCartStore()
     const path = usePathname()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-    const totalItems = user?.cart?.cartItems.length
-    console.log(user?.cart)
+    const totalItems = cart?.cartItems.length||0
+   
     const logout=()=>{
+       //put cart items to the backend
         removeToken()
         removeUser()
     }
@@ -77,7 +79,6 @@ export function Header() {
                         </GlobalSearch>
 
                         {user?
-                        <>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">
@@ -86,7 +87,7 @@ export function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                <span className="text-sm text-gray-400">{user.firstName+user.lastName}</span>
+                                <span className="text-sm text-gray-400">{user.firstName+" "+user.lastName}</span>
                                 <DropdownMenuItem asChild>
                                     <Link href="/account">Profile</Link>
                                 </DropdownMenuItem>
@@ -103,6 +104,7 @@ export function Header() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                        
+                        :null}
                         <Link href="/cart" className="relative">
                             <Button variant="ghost" size="icon">
                                 <ShoppingCart className="h-5 w-5" />
@@ -113,8 +115,7 @@ export function Header() {
                                 )}
                             </Button>
                         </Link>
-                        </>
-                        :null}
+                        
                     </div>
                 </div>
             </div>

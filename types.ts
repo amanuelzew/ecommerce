@@ -1,46 +1,49 @@
-import { Category  } from "@prisma/client";
+import { Category } from "@prisma/client";
 
 export type GQLContext = {
     user?: { id: string; email: string; isAdmin: boolean; firstName: String; lastName: String, cart: Cart } | null
 }
 
-
-interface CartItem {
+export interface CartItem {
     product: {
         id: string;
         name: string;
         price: number;
         description: string;
-        category: string;
+        category: Category;
     };
     quantity: number;
 }
 
-interface Cart {
-    id: string; // Assuming ID is a string, adjust if needed
+export interface Cart {
     cartItems: CartItem[];
 }
 
 export interface User {
-    firstName: string;
-    lastName: string;
-    email: string;
+    firstName: string 
+    lastName: string 
+    email: string 
     isAdmin: boolean;
-    token: string;
-    cart: Cart | null; // Cart can be null
+    token: string 
+    cartId: string | null
 }
-// Define the Zustand store types
 export interface StoreState {
-    user: User | null;
+    user: User| null;
     createUser: (userData: User) => void;
     removeUser: () => void;
+}
+export interface CartState {
+    cart: Cart;
+    addToCart:(product:Product,quantity?:number) => void;
+    removeFromCart: (productId:string) => void;
+    clearCart: () => void;
 }
 export interface Product {
     id: string;
     name: string;
     description: string;
     price: number;
-    quantity: number;
+    //quantity: number;
     category: Category
 }
 export type signinUserInput = {

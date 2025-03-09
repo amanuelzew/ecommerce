@@ -3,7 +3,10 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, Check } from "lucide-react"
-import type { Product } from "@/lib/types"
+import { Product } from "@/types"
+import { useUserStore } from "@/context/userContext"
+import { useCartStore } from "@/context/cartContext"
+
 
 interface AddToCartButtonProps {
   product: Product
@@ -11,34 +14,36 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ product, compact = false }: AddToCartButtonProps) {
-//  const { addToCart } = useCart()
-  const [added, setAdded] = useState(false)
+
+  
+  const {cart,addToCart}=useCartStore()
+  const isProductInCart = cart?.cartItems.some((item) => item.product.id === product.id);
 
   const handleAddToCart = () => {
-   // addToCart({...product,quantity: 1,})
-    setAdded(true)
-    setTimeout(() => setAdded(false), 2000)
+    addToCart(product)
   }
 
   if (compact) {
     return (
-      <Button onClick={handleAddToCart} className="w-full" size="sm" variant={added ? "success" : "default"}>
-        {added ? (
-          <>
-            <Check className="mr-2 h-4 w-4" /> Added
-          </>
-        ) : (
-          "Add to Cart"
-        )}
+      <Button onClick={handleAddToCart} className="w-full" size="sm" disabled={isProductInCart}>
+          {isProductInCart ? (
+        <>
+          <Check className="mr-2 h-4 w-4" /> Already in Cart
+        </>
+      ) : (
+        <>
+          <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+        </>
+      )}
       </Button>
     )
   }
 
   return (
-    <Button onClick={handleAddToCart} className="flex-1" variant={added ? "success" : "default"}>
-      {added ? (
+    <Button onClick={handleAddToCart} className="flex-1" disabled={isProductInCart}>
+      {isProductInCart ? (
         <>
-          <Check className="mr-2 h-4 w-4" /> Added to Cart
+          <Check className="mr-2 h-4 w-4" /> Already in Cart
         </>
       ) : (
         <>

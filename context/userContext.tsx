@@ -1,5 +1,5 @@
 "use client"
-import { StoreState, User } from "@/types";
+import { Cart, StoreState, User } from "@/types";
 import  { createContext, useContext, useState, ReactNode } from "react";
 
 
@@ -12,7 +12,7 @@ const UserContext = createContext<StoreState>({
 
 // Provider component
 export const UserProvider = ({ children }:{children:ReactNode}) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User| null>(null);
 
   const createUser = (userData: User) => {
     setUser(userData);
@@ -22,7 +22,7 @@ export const UserProvider = ({ children }:{children:ReactNode}) => {
     setUser(null);
   };
   return (
-    <UserContext.Provider value={{ user, createUser, removeUser }}>
+    <UserContext.Provider value={{ user, createUser, removeUser}}>
       {children}
     </UserContext.Provider>
   );

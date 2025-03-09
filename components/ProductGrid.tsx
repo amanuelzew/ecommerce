@@ -11,7 +11,6 @@ import { ProductsQuery } from "@/gql/productsQuery"
 export function ProductGrid() {
   
   const [{data,error,fetching},replay]=useQuery({query:ProductsQuery})
-  console.log(data,fetching,"oo")
 
   return (
     <div>
