@@ -54,9 +54,10 @@ import { useMutation, useQuery } from "urql"
 import { ProductsQuery } from "@/gql/productsQuery"
 import { Product } from "@/types"
 import { ProductMutation } from "@/gql/ProductMutation"
-import { updateMutation } from "@/gql/updateProductMutation"
-import { deleteMutation } from "@/gql/deleteProductMutation"
+import { updateProductMutation } from "@/gql/updateProductMutation"
+import { deleteProductMutation } from "@/gql/deleteProductMutation"
 import { Category } from "@prisma/client"
+import { searchProducts } from "@/lib/products"
 
 type NewProduct={
     name: string
@@ -67,9 +68,10 @@ type NewProduct={
 }
 export default function Products() {
   const [{data,error,fetching},replay]=useQuery({query:ProductsQuery})
+  const [products,setProducts]=useState<Product[]>([])
   const [_,createProduct]=useMutation(ProductMutation)
-  const [__,updateProduct]=useMutation(updateMutation)
-  const [___,deleteProduct]=useMutation(deleteMutation)
+  const [__,updateProduct]=useMutation(updateProductMutation)
+  const [___,deleteProduct]=useMutation(deleteProductMutation)
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: "",
     description: "",
@@ -81,7 +83,7 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product|null>(null)
   const [editedProduct, setEditedProduct] = useState<Product|null>(null)
   const [productToDelete, setProductToDelete] = useState<Product|null>(null)
-
+  
   const handleCreateProduct = async() => {
    const result=await createProduct({input:newProduct})
    //reload products and reset fields
@@ -100,15 +102,27 @@ export default function Products() {
         setEditedProduct(null)
     }
   }
-
+  
   const handleDeleteProduct =async () => {
-    const result=await deleteProduct({deleteProductId:productToDelete?.id})
-    if(result.data){
-        await replay({requestPolicy:"network-only"})
-        setProductToDelete(null)
-    }
+      const result=await deleteProduct({deleteProductId:productToDelete?.id})
+      if(result.data){
+          await replay({requestPolicy:"network-only"})
+          setProductToDelete(null)
+      }
   }
 
+  const searchProducts=(query:string)=>{
+    if(query=="")
+    setProducts(data.products)
+    else
+    setProducts(products?.filter((product)=>product.name.includes(query.toLowerCase())))
+  }
+  
+  useEffect(()=>{
+    if(data && data.products){
+      setProducts(data.products)
+    }
+  },[])
   // Open edit dialog with product data
   const openEditDialog = (product: any) => {
     setEditedProduct({ ...product })
@@ -213,7 +227,7 @@ export default function Products() {
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="relative w-full md:w-80">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search products..." className="pl-8" />
+          <Input placeholder="Search products..." className="pl-8" onChange={(e)=>searchProducts(e.target.value)}/>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
@@ -268,13 +282,11 @@ export default function Products() {
                 <TableHead>Product</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.products.map((product:Product) => (
+              {products.map((product:Product) => (
                 <TableRow key={product.id}>
                   <TableCell>
                     <div className="h-12 w-12 relative rounded-md overflow-hidden">
@@ -316,7 +328,7 @@ export default function Products() {
       {/* pagination */}
       {/* <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing <strong>1-{data.products.length}</strong> of <strong>{data.products.length}</strong> products
+          Showing <strong>1-{products?.length}</strong> of <strong>{products?.length}</strong> products
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="icon">

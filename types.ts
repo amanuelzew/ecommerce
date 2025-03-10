@@ -1,4 +1,5 @@
 import { Category,Cart as Carts} from "@prisma/client";
+import { Dispatch, SetStateAction } from "react";
 
 export type GQLContext = {
     user?: { id: string; email: string; isAdmin: boolean; firstName: String; lastName: String, cart: Carts } | null
@@ -24,7 +25,6 @@ export interface User {
     lastName: string 
     email: string 
     isAdmin: boolean;
-    token: string 
     cartId: string | null
 }
 export interface StoreState {
@@ -34,6 +34,7 @@ export interface StoreState {
 }
 export interface CartState {
     cart: Cart;
+    setCart:React.Dispatch<React.SetStateAction<Cart>>; 
     addToCart:(product:Product,quantity?:number) => void;
     removeFromCart: (productId:string) => void;
     clearCart: () => void;

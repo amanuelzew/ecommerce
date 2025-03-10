@@ -5,12 +5,13 @@ import { SigninMutation } from '@/gql/signinMutation'
 import { setToken } from '@/utils/token'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
-import { User } from '@/types'
 import { useUserStore } from '@/context/userContext'
+import { useCartStore } from '@/context/cartContext'
 
 
 const SignupPage = () => {
     const { createUser } = useUserStore();
+    const { setCart } = useCartStore();
     const [_, signin] = useMutation(SigninMutation)
     const router = useRouter()
     const [state, setState] = useState({ email: '', password: '', })
@@ -20,11 +21,17 @@ const SignupPage = () => {
         e.preventDefault()
         setLoading(true)
         const result = await signin({ input: state })
-        console.log("first",result.data.signin)
         if (result.data.signin) {
           setToken(result.data.signin.token)
           setState({ email: '', password: '' })
-          createUser(result.data.signin.user)
+          createUser({
+            firstName: result.data.signin.firstName,
+            lastName: result.data.signin.lastName,
+            email: result.data.signin.email,
+            isAdmin: result.data.signin.isAdmin,
+            cartId: result.data.signin.cart.id,
+          })
+          setCart(result.data.signin.cart)
           if(result.data.signin.isAdmin==true)
           router.push('/admin')
           else

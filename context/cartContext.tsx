@@ -6,6 +6,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 // Create the default values for context
 const CartContext = createContext<CartState>({
     cart: {  cartItems: [] },
+    setCart:()=>{},
     addToCart: (product: Product, quantity?: number) => { },
     removeFromCart: (productId: string) => { },
     clearCart: () => { }
@@ -55,7 +56,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setCart({  cartItems: [] })
     };
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+        <CartContext.Provider value={{ cart, setCart, addToCart, removeFromCart, clearCart}}>
             {children}
         </CartContext.Provider>
     );

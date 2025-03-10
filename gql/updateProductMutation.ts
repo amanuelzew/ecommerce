@@ -1,6 +1,6 @@
 import { gql } from 'urql'
 
-export const updateMutation = gql`
+export const updateProductMutation = gql`
   mutation EditProduct($editProductId: ID!, $input: editProductInput!) {
     editProduct(id: $editProductId, input: $input) {
         id

@@ -74,7 +74,10 @@ const schema=`#graphql
     createProduct(input:createProductInput!):Product
     editProduct(id:ID!,input:editProductInput!):Product!
     deleteProduct(id:ID!):Product!
-    addToCart(input:addToCartInput!):Cart!
+    createCartItem(input:addToCartInput!):Cart!
+    editCartItem(input:addToCartInput!):Cart!
+    deleteCartItem(id:ID!):Cart!
+    clearCart:Cart!
   }
 `
 export default schema

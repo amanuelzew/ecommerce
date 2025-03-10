@@ -5,8 +5,12 @@ import { SignupMutation } from '@/gql/signupMutation'
 import { setToken } from '@/utils/token'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
+import { useUserStore } from '@/context/userContext'
+import { useCartStore } from '@/context/cartContext'
 
 const SignupPage = () => {
+    const { createUser } = useUserStore();
+    const { setCart } = useCartStore();
     const [_, signup] = useMutation(SignupMutation)
     const router = useRouter()
     const [state, setState] = useState({ firstName: '', lastName: '', email: '', password: '', })
@@ -20,6 +24,13 @@ const SignupPage = () => {
         if (result.data.signup) {
           setToken(result.data.signup.token)
           setState({ firstName: '', lastName: '', email: '', password: '' })
+          createUser({
+            firstName: result.data.signin.firstName,
+            lastName: result.data.signin.lastName,
+            email: result.data.signin.email,
+            isAdmin: result.data.signin.isAdmin,
+            cartId: result.data.signin.cart.id,
+          })
           router.push('/')
         }
     }

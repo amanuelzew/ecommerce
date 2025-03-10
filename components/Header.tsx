@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { link } from "fs"
 import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { removeToken } from "@/utils/token"
 import { useUserStore } from "@/context/userContext"
 import { useCartStore } from "@/context/cartContext"
@@ -34,16 +34,18 @@ export const navItem = [
 export function Header() {
     //const { cart } = useCart()
     const {user,removeUser}=useUserStore()
-    const {cart}=useCartStore()
+    const {cart,clearCart}=useCartStore()
     const path = usePathname()
+    const router=useRouter()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     const totalItems = cart?.cartItems.length||0
-   
+    console.log(user,"iopuy")
     const logout=()=>{
-       //put cart items to the backend
+        router.push("/")
         removeToken()
         removeUser()
+        clearCart()
     }
 
     return (
@@ -99,12 +101,12 @@ export function Header() {
                                     <Link href="/account/wishlist">Wishlist</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={()=>logout}>Logout</DropdownMenuItem>
+                                <DropdownMenuItem onClick={()=>logout()}>Logout</DropdownMenuItem>
                                 
                             </DropdownMenuContent>
                         </DropdownMenu>
                        
-                        :null}
+                        :<Button className="rounded-sm" onClick={()=>router.push("/signin")}>Sign in</Button>}
                         <Link href="/cart" className="relative">
                             <Button variant="ghost" size="icon">
                                 <ShoppingCart className="h-5 w-5" />

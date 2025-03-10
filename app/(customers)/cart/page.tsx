@@ -1,20 +1,55 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { useCartStore } from "@/context/cartContext"
+import { useUserStore } from "@/context/userContext"
+import { clearCartMutation } from "@/gql/ClearCartMutation"
+import { deleteCartMutation } from "@/gql/deleteCartMutation"
+import { updateCartMutation } from "@/gql/updateCartMutation"
+import { CartItem } from "@/types"
+import { Trash2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
-import { useUserStore } from "@/context/userContext"
-import { useCartStore } from "@/context/cartContext"
-import { useState } from "react"
+import { ChangeEvent } from "react"
+import { useMutation } from "urql"
 
 export default function CartPage() {
+  
+  
   const {user}=useUserStore()
+  const [_,editProductInCart]=useMutation(updateCartMutation)
+  const [__,deleteProductInCart]=useMutation(deleteCartMutation)
+  const [___,emptyCart]=useMutation(clearCartMutation)
   const { cart,addToCart,removeFromCart,clearCart } =useCartStore()
 
   const subtotal = cart?.cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0)
-  console.log(cart)
   
+  const incrementProductQuanityInCart=async (item:CartItem)=> {
+    if(user)
+   await editProductInCart({input:{ "productID": item.product.id,"quantity":item.quantity+1}})
+   addToCart(item.product, item.quantity + 1)
+  }
+  const decrementProductQuanityInCart=async (item:CartItem)=> {
+    if(user)
+    await editProductInCart({input:{ "productID": item.product.id,"quantity":Math.max(1, item.quantity - 1)}})
+    addToCart(item.product, Math.max(1, item.quantity - 1))
+  }
+
+  const addItemToCart=async(item:CartItem,e:ChangeEvent<HTMLInputElement>)=>{
+    if(user)
+    await ({input:{ "productID": item.product.id,"quantity": Number.parseInt(e.target.value) || 1}})
+    addToCart(item.product, Number.parseInt(e.target.value) || 1)
+  }
+  const deleteItemFromCart=async(item:CartItem)=>{
+    if(user)
+    await deleteProductInCart({deleteCartItemId:item.product.id})
+    removeFromCart(item.product.id)
+  }
+  const clearItemFromCart=async()=>{
+    if(user)
+    await emptyCart()
+    clearCart()
+  }
   
 
   if (cart?.cartItems.length === 0) {
@@ -76,7 +111,7 @@ export default function CartPage() {
                       <div className="flex border rounded-md w-24">
                         <button
                           className="px-2 py-1 border-r"
-                        onClick={() => addToCart(item.product, Math.max(1, item.quantity - 1))}
+                        onClick={() => decrementProductQuanityInCart(item)}
                         >
                           -
                         </button>
@@ -84,12 +119,12 @@ export default function CartPage() {
                           type="number"
                           min="1"
                           value={item.quantity}
-                          onChange={(e)=>{addToCart(item.product, Number.parseInt(e.target.value) || 1)}}
+                          onChange={(e)=>addItemToCart(item,e)}
                           className="w-10 text-center"
                         />
                         <button
                           className="px-2 py-1 border-l"
-                          onClick={(e) => addToCart(item.product, item.quantity + 1)}
+                          onClick={(e) => incrementProductQuanityInCart(item)}
                         >
                           +
                         </button>
@@ -99,7 +134,7 @@ export default function CartPage() {
                       ${(item.product.price * item.quantity).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button onClick={() => removeFromCart(item.product.id)} 
+                      <button onClick={() => deleteItemFromCart(item)} 
                       className="text-red-600 hover:text-red-900">
                         <Trash2 className="h-5 w-5" />
                       </button>
@@ -111,7 +146,7 @@ export default function CartPage() {
           </div>
 
           <div className="flex justify-between mt-6">
-            <Button variant="outline" onClick={clearCart}>
+            <Button variant="outline" onClick={()=>clearItemFromCart()}>
               Clear Cart
             </Button>
             <Link href="/">
@@ -141,4 +176,3 @@ export default function CartPage() {
     </main>
   )
 }
-

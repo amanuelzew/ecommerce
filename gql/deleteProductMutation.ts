@@ -1,6 +1,6 @@
 import { gql } from 'urql'
 
-export const deleteMutation = gql`
+export const deleteProductMutation = gql`
   mutation DeleteProduct($deleteProductId: ID!) {
   deleteProduct(id: $deleteProductId) {
     id

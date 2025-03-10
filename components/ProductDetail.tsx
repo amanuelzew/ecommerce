@@ -4,11 +4,13 @@ import Image from "next/image"
 import { AddToCartButton } from "@/components/AddToCartButton"
 import { useQuery } from "urql"
 import { ProductQuery } from "@/gql/productQuery"
+import { useState } from "react"
 
 
 export default function ProductDetail({ id }: { id: string }) {
 
     const [{ data, error, fetching }, replay] = useQuery({ query: ProductQuery, variables: { productId: id } })
+    const [quantity,setQuantity]=useState(1)
 
     
     return (
@@ -17,7 +19,7 @@ export default function ProductDetail({ id }: { id: string }) {
                 <div className="grid md:grid-cols-2 gap-8 mt-8">
                     <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
                         <Image
-                            src={data.product.image || "/placeholder.svg?height=600&width=600"}
+                            src={"/placeholder.svg?height=600&width=600"}
                             alt={data.product.name}
                             fill
                             className="object-cover"
@@ -80,11 +82,11 @@ export default function ProductDetail({ id }: { id: string }) {
 
                         <div className="mt-8 flex gap-4">
                             <div className="flex border rounded-md">
-                                <button className="px-3 py-2 border-r">-</button>
-                                <input type="number" min="1" defaultValue="1" className="w-16 text-center" />
-                                <button className="px-3 py-2 border-l">+</button>
+                                <button className="px-3 py-2 border-r" onClick={()=>setQuantity((prev)=>Math.max(1,prev-1))}>-</button>
+                                <input type="number" min="1" value={quantity} className="w-16 text-center" onChange={(e)=>setQuantity(parseInt(e.target.value))}/>
+                                <button className="px-3 py-2 border-l" onClick={()=>setQuantity((prev)=>prev+1)}>+</button>
                             </div>
-                            <AddToCartButton product={data.product} />
+                            <AddToCartButton product={data.product} quantity={quantity} />
                         </div>
                     </div>
                 </div>

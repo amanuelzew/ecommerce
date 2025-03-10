@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Bell, Search, HelpCircle, Settings, LogOut, User } from "lucide-react"
+import { Bell, Search, HelpCircle, Settings, LogOut, User, Navigation } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { removeToken } from "@/utils/token"
+import { useUserStore } from "@/context/userContext"
+import { useRouter } from "next/navigation"
 
 export function AdminHeader() {
   const [showSearch, setShowSearch] = useState(false)
+  const {removeUser}=useUserStore()
+  const router = useRouter()
 
   return (
     <header className="h-16 border-b bg-white flex items-center px-6">
@@ -104,7 +109,11 @@ export function AdminHeader() {
                   Settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>{
+                   removeToken()
+                   removeUser()
+                   router.push("/")
+                }}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
                 </DropdownMenuItem>
