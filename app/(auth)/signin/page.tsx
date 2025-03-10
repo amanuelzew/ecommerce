@@ -20,12 +20,12 @@ const SignupPage = () => {
         e.preventDefault()
         setLoading(true)
         const result = await signin({ input: state })
-        const data:User=result.data.signin
-        if (data) {
-          setToken(data.token)
+        console.log("first",result.data.signin)
+        if (result.data.signin) {
+          setToken(result.data.signin.token)
           setState({ email: '', password: '' })
-          createUser(data)
-          if(data.isAdmin==true)
+          createUser(result.data.signin.user)
+          if(result.data.signin.isAdmin==true)
           router.push('/admin')
           else
           router.push('/')

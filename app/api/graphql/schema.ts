@@ -13,7 +13,7 @@ const schema=`#graphql
     firstName:String!
     lastName:String!
     token:String!
-    cart:Cart
+    cart:Cart!
   }
   type Product{
     id:ID!

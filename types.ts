@@ -1,7 +1,7 @@
-import { Category } from "@prisma/client";
+import { Category,Cart as Carts} from "@prisma/client";
 
 export type GQLContext = {
-    user?: { id: string; email: string; isAdmin: boolean; firstName: String; lastName: String, cart: Cart } | null
+    user?: { id: string; email: string; isAdmin: boolean; firstName: String; lastName: String, cart: Carts } | null
 }
 
 export interface CartItem {

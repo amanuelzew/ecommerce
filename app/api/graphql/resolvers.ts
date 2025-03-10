@@ -4,18 +4,10 @@ import db from "@/utils/db"
 import { GQLContext, signinUserInput, signupUserInput, createProductInput, editProductInput, addToCartInput } from '@/types'
 
 const resolvers = {
-    User:{
-        cart:async (_: any, __: any,ctx:GQLContext) => {
-            return db.cart.findUnique({
-                where: {id:ctx.user!.cart.id},
-                include:{cartItems:true}
-            })
-        },
-    },
     Cart:{
-        cartItems:async (_: any, __: any,ctx:GQLContext) => {
+        cartItems:async (cart: any, __: any,ctx:GQLContext) => {
             return db.cartItem.findMany({
-                where: {cartId:ctx.user!.cart.id},
+                where: {cartId:cart.id},
                 include:{product:true}
             })
         },
@@ -46,7 +38,7 @@ const resolvers = {
             const data = await signin(input)
             if (!data || !data.user || !data.token) {
                 throw new GraphQLError("unauthorized", { extensions: { code: "401" } })
-            }
+            }  
             return { ...data.user, token: data.token }
         },
         signup: async (_: any, { input }: { input: signupUserInput }) => {

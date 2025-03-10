@@ -45,6 +45,7 @@ export const signin = async ({
 }) => {
   const match = await db.user.findUnique({
     where: { email },
+    select:{id:true,email:true,firstName:true,lastName:true,isAdmin:true,password:true,cart:{select:{id:true,userId:true,cartItems:true}}}
   });
 
   if (match === null) throw new Error("invalid email or password");

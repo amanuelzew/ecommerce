@@ -7,6 +7,7 @@ export const SigninMutation = gql`
     lastName
     email
     isAdmin
+    token
     cart {
       id
       cartItems {
