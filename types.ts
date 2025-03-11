@@ -10,6 +10,7 @@ export interface CartItem {
         id: string;
         name: string;
         price: number;
+        image:string;
         description: string;
         category: Category;
     };
@@ -44,7 +45,7 @@ export interface Product {
     name: string;
     description: string;
     price: number;
-    //quantity: number;
+    image:string;
     category: Category
 }
 export type signinUserInput = {

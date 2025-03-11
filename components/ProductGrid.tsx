@@ -24,31 +24,31 @@ interface ProductGridProps {
   }
   sortOption?: string
   viewMode?: "grid" | "list",
-  page: number,
+  page?: number,
 }
-export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid", page }: ProductGridProps) {
+export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid", page=-1 }: ProductGridProps) {
 
 
-  const [getProducts, replay] = useQuery({ query: ProductsQuery })
-  const [getPaginatedProducts, replayy] = useQuery({
+  //const [getProducts, replay] = useQuery({ query: ProductsQuery })
+  const [{data,fetching,error}, replayy] = useQuery({
     query: ProductsQuery,
     variables: {input:{ limit: 2, offset: (page-1) * 2 }}
   })
-  const{data:getProductsData,fetching:getProductsFetching,error:getProductsError}=getProducts
+  /* const{data:getProductsData,fetching:getProductsFetching,error:getProductsError}=getProducts
   const{data:getPaginatedProductsData,fetching:getPaginatedProductsFetching,error:getPaginatedProductsError}=getPaginatedProducts
   const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]) */
 
  /*  useEffect(() => {
     if (getProductsData && getProductsData.products)
       setProducts(getProductsData.products)
   }, [getProductsData]) */
-  useEffect(() => {
+  /* useEffect(() => {
     if (getPaginatedProductsData && getPaginatedProductsData.products)
       setProducts(getPaginatedProductsData.products)
-  }, [getPaginatedProductsData])
+  }, [getPaginatedProductsData]) */
   // Apply filters and sorting
-  useEffect(() => {
+  /* useEffect(() => {
     if (getProductsData && !getProductsData.products.length) return
 
     let result = [...products]
@@ -79,27 +79,27 @@ export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid
     }
 
     setFilteredProducts(result)
-  }, [products, filters, sortOption])
+  }, [products, filters, sortOption]) */
   return (
     <div>
       <div className={
         viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" : "space-y-4"
       }>
-        {filteredProducts.length > 0
-          ? filteredProducts.map((product) => <ProductCard key={product.id} product={product} layout={viewMode} />)
-          : !getProductsFetching && (
+        {data&& data.products.length > 0
+          ? data.products.map((product:Product) => <ProductCard key={product.id} product={product} layout={viewMode} />)
+          : !fetching && (
             <div className="col-span-full py-12 text-center">
               <h3 className="text-lg font-medium mb-2">No products found</h3>
               <p className="text-muted-foreground">Try adjusting your filters to find what you're looking for.</p>
             </div>
           )}
 
-        {getProductsFetching &&
+        {fetching &&
           Array(4)
             .fill(0)
             .map((_, i) => <div key={i} className="rounded-lg bg-gray-100 animate-pulse h-80"></div>)}
       </div>
-
+     {page>0&&
       <Pagination>
         <PaginationContent>
           <PaginationItem >
@@ -125,7 +125,7 @@ export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-
+      }
     </div>
   )
 }

@@ -161,7 +161,7 @@ export function GlobalSearch({ children }: GlobalSearchProps) {
                   >
                     <div className="relative h-16 w-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
                       <Image
-                        src={product.description || "/placeholder.svg?height=64&width=64"}
+                         src={"/next.svg"}
                         alt={product.name}
                         fill
                         className="object-cover"

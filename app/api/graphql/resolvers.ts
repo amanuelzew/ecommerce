@@ -17,7 +17,6 @@ const resolvers = {
             return ctx.user
         },
         products: async (_: any, { input }: { input: paginationInput }, ctx: GQLContext) => {
-            console.log(input)
             if (input && input.limit && input.offset>=0)
                 return await db.product.findMany({
                     skip: input.offset,

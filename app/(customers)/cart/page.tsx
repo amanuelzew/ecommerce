@@ -96,7 +96,7 @@ export default function CartPage() {
                       <div className="flex items-center">
                         <div className="h-16 w-16 relative flex-shrink-0">
                           <Image
-                            src={"/placeholder.svg?height=64&width=64"}
+                            src={"/next.svg"}
                             alt={item.product.name}
                             fill
                             className="object-cover rounded"

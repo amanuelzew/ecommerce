@@ -19,7 +19,7 @@ export default function ProductDetail({ id }: { id: string }) {
                 <div className="grid md:grid-cols-2 gap-8 mt-8">
                     <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
                         <Image
-                            src={"/placeholder.svg?height=600&width=600"}
+                           src={"/next.svg"}
                             alt={data.product.name}
                             fill
                             className="object-cover"

@@ -1,6 +1,4 @@
-
 import Products from "@/components/Products"
-
 
 interface productsProps {
   page: string,

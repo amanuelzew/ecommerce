@@ -18,7 +18,7 @@ export function Categories() {
           <Link key={category.name} href={category.href} className="group">
             <div className="relative aspect-square overflow-hidden rounded-lg">
               <Image
-                src={category.image || "/placeholder.svg"}
+                 src={"/vercel.svg"}
                 alt={category.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

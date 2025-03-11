@@ -18,7 +18,7 @@ export function ProductCard({ product, compact = false, layout = "grid" }: Produ
           <Link href={`/products/${product.id}`}>
             <div className="relative h-full w-full">
               <Image
-                src={"/placeholder.svg?height=160&width=160"}
+                 src={"/next.svg"}
                 alt={product.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -60,7 +60,7 @@ export function ProductCard({ product, compact = false, layout = "grid" }: Produ
         <Link href={`/products/${product.id}`}>
           <div className="relative h-full w-full">
             <Image
-              src={"/placeholder.svg?height=400&width=400"}
+              src={"/next.svg"}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
