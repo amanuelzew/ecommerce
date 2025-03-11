@@ -7,8 +7,24 @@ import { Grid2X2, List, SlidersHorizontal } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ProductsFilter } from "@/components/ProductsFilter"
 
-export function ProductsHeader() {
+interface ProductsHeaderProps {
+  onSortChange?: (option: string) => void
+  onViewModeChange?: (mode: "grid" | "list") => void
+}
+
+export function ProductsHeader({ onSortChange, onViewModeChange }: ProductsHeaderProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const handleSortChange = (value: string) => {
+    if (onSortChange) {
+      onSortChange(value)
+    }
+  }
+  const handleViewModeChange = (mode: "grid" | "list") => {
+    setViewMode(mode)
+    if (onViewModeChange) {
+      onViewModeChange(mode)
+    }
+  }
 
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -25,11 +41,11 @@ export function ProductsHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <ProductsFilter />
+            <ProductsFilter onFilterChange={() => {}}/>
           </SheetContent>
         </Sheet>
 
-        <Select defaultValue="featured">
+        <Select defaultValue="featured" onValueChange={handleSortChange}>
           <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -47,7 +63,7 @@ export function ProductsHeader() {
             variant="ghost"
             size="icon"
             className={`rounded-r-none ${viewMode === "grid" ? "bg-gray-100" : ""}`}
-            onClick={() => setViewMode("grid")}
+            onClick={() => handleViewModeChange("grid")}
           >
             <Grid2X2 className="h-4 w-4" />
           </Button>
@@ -55,7 +71,7 @@ export function ProductsHeader() {
             variant="ghost"
             size="icon"
             className={`rounded-l-none ${viewMode === "list" ? "bg-gray-100" : ""}`}
-            onClick={() => setViewMode("list")}
+            onClick={() => handleViewModeChange("list")}
           >
             <List className="h-4 w-4" />
           </Button>

@@ -1,7 +1,7 @@
 import { signin, signup } from "@/utils/auth"
 import { GraphQLError } from "graphql"
 import db from "@/utils/db"
-import { GQLContext, signinUserInput, signupUserInput, createProductInput, editProductInput, addToCartInput } from '@/types'
+import { GQLContext, signinUserInput, signupUserInput, createProductInput, editProductInput, addToCartInput, paginationInput } from '@/types'
 
 const resolvers = {
     Cart: {
@@ -16,9 +16,15 @@ const resolvers = {
         me: async (_: any, __: any, ctx: GQLContext) => {
             return ctx.user
         },
-        products: async (_: any, __: any, ctx: GQLContext) => {
-            const products = await db.product.findMany()
-            return products
+        products: async (_: any, { input }: { input: paginationInput }, ctx: GQLContext) => {
+            console.log(input)
+            if (input && input.limit && input.offset>=0)
+                return await db.product.findMany({
+                    skip: input.offset,
+                    take: input.limit,
+                })
+            else
+                return db.product.findMany()
         },
         product: async (_: any, { id }: { id: string }, ctx: GQLContext) => {
             const product = await db.product.findMany({ where: { id: id } })
@@ -105,21 +111,21 @@ const resolvers = {
             }
             await db.cartItem.update({
                 where: { cartId_productId: { cartId: ctx.user.cart.id, productId: input.productID } },
-                data: { quantity:  input.quantity  },
+                data: { quantity: input.quantity },
             })
             return ctx.user.cart
         },
         deleteCartItem: async (_: any, { id }: { id: string; }, ctx: GQLContext) => {
             if (!ctx.user) {
                 throw new GraphQLError('Unauthorized', { extensions: { code: '401' } });
-            } 
-            const cart = await db.cartItem.delete( {where: { cartId_productId: { cartId: ctx.user.cart.id, productId: id } }});
+            }
+            const cart = await db.cartItem.delete({ where: { cartId_productId: { cartId: ctx.user.cart.id, productId: id } } });
             return cart;
         },
-        clearCart: async (_: any, __:any, ctx: GQLContext) => {
+        clearCart: async (_: any, __: any, ctx: GQLContext) => {
             if (!ctx.user) {
                 throw new GraphQLError('Unauthorized', { extensions: { code: '401' } });
-            } 
+            }
             const cart = await db.cartItem.deleteMany({});
             return cart;
         },

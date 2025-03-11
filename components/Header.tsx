@@ -40,7 +40,6 @@ export function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     const totalItems = cart?.cartItems.length||0
-    console.log(user,"iopuy")
     const logout=()=>{
         router.push("/")
         removeToken()

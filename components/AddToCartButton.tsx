@@ -12,7 +12,7 @@ import { CartMutation } from "@/gql/cartMutation"
 
 interface AddToCartButtonProps {
   product: Product
-  quantity:number
+  quantity?:number
   compact?: boolean
 }
 

@@ -1,8 +1,8 @@
 import { gql } from 'urql'
 
 export const ProductsQuery = gql`
-  query{
-    products {
+  query Query($input: paginationInput) {
+    products(input: $input) {
       id
       name
       description

@@ -76,3 +76,7 @@ export type addToCartInput = {
     productID: string
     quantity: number
 }
+export type paginationInput={
+    limit:number
+    offset:number
+}

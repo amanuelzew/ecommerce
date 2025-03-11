@@ -61,9 +61,13 @@ const schema=`#graphql
     productID:ID!
     quantity:Int
   }
+  input paginationInput{
+    limit:Int!
+    offset:Int!
+  }
   type Query{
     me:User
-    products:[Product!]
+    products(input:paginationInput):[Product!]
     product(id:ID!):Product!
     cart:Cart!
   }
