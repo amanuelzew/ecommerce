@@ -8,6 +8,7 @@ export const ProductQuery = gql`
     description
     price
     category
+    quantity
   }
 }
 `

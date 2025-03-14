@@ -11,6 +11,7 @@ export interface CartItem {
         name: string;
         price: number;
         image:string;
+        quantity:number;
         description: string;
         category: Category;
     };
@@ -46,7 +47,24 @@ export interface Product {
     description: string;
     price: number;
     image:string;
+    quantity:number;
     category: Category
+}
+export interface OrderItem {
+    product: {
+        id: string;
+        name: string;
+        price: number;
+        image:string;
+    };
+    quantity: number;
+}
+export interface Order {
+    id: string;
+    createdAt: string;
+    total:number
+    user:{firstName:String,lastName:String}
+    orderItems:OrderItem[]
 }
 export type signinUserInput = {
     email: string

@@ -1,24 +1,24 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect, useRef } from "react"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, X, ArrowRight, Clock, TrendingUp } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { ProductQuery } from "@/gql/productQuery"
+import { ProductsQuery } from "@/gql/productsQuery"
+import { Product } from "@/types"
+import { ArrowRight, Clock, Search, TrendingUp, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { Product } from "@/types"
-import { searchProducts } from "@/lib/products"
-
-
+import type React from "react"
+import { useEffect, useRef, useState } from "react"
+import { useQuery } from "urql"
 
 interface GlobalSearchProps {
   children?: React.ReactNode
 }
 
 export function GlobalSearch({ children }: GlobalSearchProps) {
+  const [{ data, fetching, error }, replay] = useQuery({ query: ProductsQuery })
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<Product[]>([])
@@ -26,26 +26,17 @@ export function GlobalSearch({ children }: GlobalSearchProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Load recent searches from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem("recentSearches")
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved))
-      } catch (e) {
-        console.error("Failed to parse recent searches", e)
-      }
-    }
-  }, [])
-
-  // Save recent searches to localStorage
-  const saveSearch = (search: string) => {
-    if (!search.trim()) return
-
-    const newSearches = [search, ...recentSearches.filter((s) => s !== search)].slice(0, 5)
-
-    setRecentSearches(newSearches)
-    localStorage.setItem("recentSearches", JSON.stringify(newSearches))
+  function searchProducts(query: string): Product[] {
+    if (!query) return []
+    const lowerQuery = query.toLowerCase()
+    if (data)
+      return data.products.filter(
+        (product: Product) =>
+          product.name.toLowerCase().includes(lowerQuery) ||
+          product.description.toLowerCase().includes(lowerQuery) ||
+          product.category.toLowerCase().includes(lowerQuery),
+      )
+    else return []
   }
 
   // Focus input when dialog opens
@@ -75,7 +66,7 @@ export function GlobalSearch({ children }: GlobalSearchProps) {
 
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery)
-    saveSearch(searchQuery)
+
   }
 
   const clearSearch = () => {
@@ -121,6 +112,10 @@ export function GlobalSearch({ children }: GlobalSearchProps) {
           </Button>
         )}
       </DialogTrigger>
+      <DialogHeader>
+        <DialogTitle></DialogTitle>
+      </DialogHeader>
+
       <DialogContent className="sm:max-w-[600px] p-0 gap-0 max-h-[80vh] overflow-hidden" onKeyDown={handleKeyDown}>
         <div className="flex items-center p-4 border-b">
           <Search className="h-5 w-5 text-muted-foreground mr-2" />
@@ -154,14 +149,13 @@ export function GlobalSearch({ children }: GlobalSearchProps) {
                     key={product.id}
                     href={`/products/${product.id}`}
                     onClick={() => {
-                      saveSearch(query)
                       setOpen(false)
                     }}
                     className="flex items-center gap-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
                     <div className="relative h-16 w-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
                       <Image
-                         src={"/next.svg"}
+                        src={"/next.svg"}
                         alt={product.name}
                         fill
                         className="object-cover"
@@ -181,7 +175,6 @@ export function GlobalSearch({ children }: GlobalSearchProps) {
                 <Link
                   href={`/products?q=${encodeURIComponent(query)}`}
                   onClick={() => {
-                    saveSearch(query)
                     setOpen(false)
                   }}
                   className="text-sm text-primary hover:underline"

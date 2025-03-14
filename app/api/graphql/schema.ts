@@ -20,7 +20,13 @@ const schema=`#graphql
     name:String!
     description:String!
     price:Float!
+    quantity:Int!
     category:Category
+  }
+  type Cart{
+    id:ID!
+    userId:ID!
+    cartItems:[CartItem!]
   }
   type CartItem{
     cartId:ID!
@@ -28,10 +34,19 @@ const schema=`#graphql
     product:Product!
     quantity:Int
   }
-  type Cart{
+  type Order{
     id:ID!
+    createdAt:String
     userId:ID!
-    cartItems:[CartItem!]
+    user:User!
+    total:Float
+    orderItems:[OrderItem!]
+  }
+  type OrderItem{
+    orderId:ID!
+    productId:ID!
+    product:Product!
+    quantity:Int
   }
   input createProductInput{
     name:String!
@@ -70,6 +85,7 @@ const schema=`#graphql
     products(input:paginationInput):[Product!]
     product(id:ID!):Product!
     cart:Cart!
+    order:[Order!]
   }
 
   type Mutation{
@@ -82,6 +98,7 @@ const schema=`#graphql
     editCartItem(input:addToCartInput!):Cart!
     deleteCartItem(id:ID!):Cart!
     clearCart:Cart!
+    createOrder:Order!
   }
 `
 export default schema

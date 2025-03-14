@@ -5,52 +5,62 @@ import { useCartStore } from "@/context/cartContext"
 import { useUserStore } from "@/context/userContext"
 import { clearCartMutation } from "@/gql/ClearCartMutation"
 import { deleteCartMutation } from "@/gql/deleteCartMutation"
+import { orderMutation } from "@/gql/orderMutation"
 import { updateCartMutation } from "@/gql/updateCartMutation"
 import { CartItem } from "@/types"
 import { Trash2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChangeEvent } from "react"
 import { useMutation } from "urql"
 
 export default function CartPage() {
   
-  
+  const router = useRouter()
   const {user}=useUserStore()
   const [_,editProductInCart]=useMutation(updateCartMutation)
   const [__,deleteProductInCart]=useMutation(deleteCartMutation)
   const [___,emptyCart]=useMutation(clearCartMutation)
+  const [____,order] =useMutation(orderMutation)
   const { cart,addToCart,removeFromCart,clearCart } =useCartStore()
 
   const subtotal = cart?.cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0)
   
-  const incrementProductQuanityInCart=async (item:CartItem)=> {
-    if(user)
-   await editProductInCart({input:{ "productID": item.product.id,"quantity":item.quantity+1}})
-   addToCart(item.product, item.quantity + 1)
+  const incrementProductQuantityInCart=async (item:CartItem)=> {
+   if(user)
+    await editProductInCart({input:{ "productID": item.product.id,"quantity":Math.min(item.product.quantity,item.quantity+1)}})
+   addToCart(item.product, Math.min(item.product.quantity,item.quantity+1))
   }
-  const decrementProductQuanityInCart=async (item:CartItem)=> {
+  const decrementProductQuantityInCart=async (item:CartItem)=> {
     if(user)
-    await editProductInCart({input:{ "productID": item.product.id,"quantity":Math.max(1, item.quantity - 1)}})
+     await editProductInCart({input:{ "productID": item.product.id,"quantity":Math.max(1, item.quantity - 1)}})
     addToCart(item.product, Math.max(1, item.quantity - 1))
   }
 
   const addItemToCart=async(item:CartItem,e:ChangeEvent<HTMLInputElement>)=>{
     if(user)
-    await ({input:{ "productID": item.product.id,"quantity": Number.parseInt(e.target.value) || 1}})
+     await ({input:{ "productID": item.product.id,"quantity": Number.parseInt(e.target.value) || 1}})
     addToCart(item.product, Number.parseInt(e.target.value) || 1)
   }
   const deleteItemFromCart=async(item:CartItem)=>{
     if(user)
-    await deleteProductInCart({deleteCartItemId:item.product.id})
+     await deleteProductInCart({deleteCartItemId:item.product.id})
     removeFromCart(item.product.id)
   }
   const clearItemFromCart=async()=>{
     if(user)
-    await emptyCart()
+     await emptyCart()
     clearCart()
   }
   
+  const checkout=async ()=>{
+    const result = await order()
+    if (result.data.createOrder) {
+      clearItemFromCart()
+      router.push('/orders')
+    }
+  }
 
   if (cart?.cartItems.length === 0) {
     return (
@@ -111,20 +121,21 @@ export default function CartPage() {
                       <div className="flex border rounded-md w-24">
                         <button
                           className="px-2 py-1 border-r"
-                        onClick={() => decrementProductQuanityInCart(item)}
+                        onClick={() => decrementProductQuantityInCart(item)}
                         >
                           -
                         </button>
                         <input
                           type="number"
                           min="1"
+                          max={item.product.quantity}
                           value={item.quantity}
                           onChange={(e)=>addItemToCart(item,e)}
                           className="w-10 text-center"
                         />
                         <button
                           className="px-2 py-1 border-l"
-                          onClick={(e) => incrementProductQuanityInCart(item)}
+                          onClick={(e) => incrementProductQuantityInCart(item)}
                         >
                           +
                         </button>
@@ -167,9 +178,10 @@ export default function CartPage() {
               
             </div>
 
-            <Link href="/checkout">
-              <Button className="w-full mt-6">Proceed to Checkout</Button>
-            </Link>
+            {/* <Link href="/checkout"> </Link>*/}
+            {user&&
+              <Button className="w-full mt-6" onClick={checkout}>Proceed to Checkout</Button>
+            }
           </div>
         </div>
       </div>

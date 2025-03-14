@@ -12,6 +12,14 @@ const resolvers = {
             })
         },
     },
+    Order:{
+        orderItems: async (order: any, __: any, ctx: GQLContext) => {
+            return db.orderItem.findMany({
+                where: { orderId: order.id },
+                include: { product: true }
+            })
+        },
+    },
     Query: {
         me: async (_: any, __: any, ctx: GQLContext) => {
             return ctx.user
@@ -26,8 +34,7 @@ const resolvers = {
                 return db.product.findMany()
         },
         product: async (_: any, { id }: { id: string }, ctx: GQLContext) => {
-            const product = await db.product.findMany({ where: { id: id } })
-            return product[0]
+            return await db.product.findUnique({ where: { id: id } }) 
         },
         cart: async (_: any, { id }: { id: string }, ctx: GQLContext) => {
             if (!ctx.user)
@@ -35,6 +42,12 @@ const resolvers = {
 
             const cart = await db.cart.findMany({ where: { id: ctx.user.cart.id } })
             return cart[0]
+        },
+        order: async (_: any, __: any, ctx: GQLContext) => {
+            return await db.order.findMany(
+                {where:{userId:ctx.user?.id},
+                include:{user:{select:{firstName:true,lastName:true}}}
+            })
         },
 
     },
@@ -125,9 +138,39 @@ const resolvers = {
             if (!ctx.user) {
                 throw new GraphQLError('Unauthorized', { extensions: { code: '401' } });
             }
-            const cart = await db.cartItem.deleteMany({});
+            const cart = await db.cartItem.deleteMany({where:{cartId:ctx.user.cart.id}});
             return cart;
         },
+        createOrder: async (_: any, __:any, ctx: GQLContext) => {
+            if (!ctx.user) {
+                throw new GraphQLError("unauthorized", { extensions: { code: "401" } })
+            } 
+            const cartItems= await db.cartItem.findMany({ where:{cartId:ctx.user.cart.id},include:{product:true}});
+            const order=await db.order.create({
+                data:{
+                    userId:ctx.user.id,
+                    total:cartItems.reduce((acc,item)=>acc+ item.product.price*item.quantity,0),
+                    orderItems:{
+                        create:cartItems.map(item=>({
+                            productId:item.productId,
+                            quantity:item.quantity
+                        }))
+                    }
+                }
+            })
+           
+            //update quanity in products
+            for (const item of cartItems) {
+                await db.product.update({
+                    where: { id: item.productId },
+                    data: { quantity: { decrement: item.quantity } },
+                });
+            }
+            //empty cart
+            await db.cartItem.deleteMany({where:{cartId:ctx.user.cart.id}});
+            return order
+        },
+
     }
 }
 

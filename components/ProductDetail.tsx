@@ -31,7 +31,7 @@ export default function ProductDetail({ id }: { id: string }) {
                         <h1 className="text-3xl font-bold">{data.product.name}</h1>
                         <p className="text-xl font-semibold mt-2">${data.product.price.toFixed(2)}</p>
 
-                        <div className="flex items-center mt-4">
+                        {/* <div className="flex items-center mt-4">
                             <div className="flex">
                                 {Array(5)
                                     .fill(0)
@@ -47,14 +47,14 @@ export default function ProductDetail({ id }: { id: string }) {
                                     ))}
                             </div>
                             <span className="ml-2 text-sm text-gray-600">({data.product.reviewCount} reviews)</span>
-                        </div>
+                        </div> */}
 
                         <div className="mt-6">
                             <h2 className="text-lg font-semibold">Description</h2>
                             <p className="mt-2 text-gray-600">{data.product.description}</p>
                         </div>
 
-                        <div className="mt-6">
+                        {/* <div className="mt-6">
                             <h2 className="text-lg font-semibold">Select Size</h2>
                             <div className="flex gap-2 mt-2">
                                 {["XS", "S", "M", "L", "XL"].map((size) => (
@@ -78,13 +78,13 @@ export default function ProductDetail({ id }: { id: string }) {
                                     </button>
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
 
-                        <div className="mt-8 flex gap-4">
+                        <div className="mt-8 flex items-baseline gap-4">
                             <div className="flex border rounded-md">
                                 <button className="px-3 py-2 border-r" onClick={()=>setQuantity((prev)=>Math.max(1,prev-1))}>-</button>
-                                <input type="number" min="1" value={quantity} className="w-16 text-center" onChange={(e)=>setQuantity(parseInt(e.target.value))}/>
-                                <button className="px-3 py-2 border-l" onClick={()=>setQuantity((prev)=>prev+1)}>+</button>
+                                <input type="number" min="1" max={data.product.quantity} value={quantity} className="w-16 text-center" onChange={(e)=>setQuantity(parseInt(e.target.value))}/>
+                                <button className="px-3 py-2 border-l" onClick={()=>setQuantity((prev)=>Math.min(data.product.quantity,prev+1))}>+</button>
                             </div>
                             <AddToCartButton product={data.product} quantity={quantity} />
                         </div>

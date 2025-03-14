@@ -26,10 +26,8 @@ import { useCartStore } from "@/context/cartContext"
 export const navItem = [
     { title: "Home", path:"/",link: "/" },
     { title: "Products", path:"/products",link: "/products?page=1" },
-    { title: "Clothing", path:"#",link: "#" },
-    { title: "Accessories", path:"#",link: "#" },
-    { title: "About", path:"#",link: "#About" },
-    { title: "Contact us", path:"#",link: "#contact" },
+   /*  { title: "Clothing", path:"#",link: "#" },
+    { title: "Accessories", path:"#",link: "#" }, */
 ];
 export function Header() {
     //const { cart } = useCart()
@@ -69,6 +67,12 @@ export function Header() {
                                             {item.title}</Link>
                                     </li>
                                 ))}
+                                {user&&
+                                <li>
+                                    <Link href="/orders"
+                                        className={cn("", path=="/orders" && "text-blue-700")}>
+                                        Orders</Link>
+                                </li>}
                             </ul>
                         </nav>
                     </div>

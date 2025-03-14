@@ -1,10 +1,10 @@
-import Products  from "@/components/admin/Products";
+import AdminProducts  from "@/components/admin/AdminProducts";
 
 export default async function ProductsPage() {
   
 
   return (
-   <Products />
+   <AdminProducts />
   )
 }
 

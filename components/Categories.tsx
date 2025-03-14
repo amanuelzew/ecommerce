@@ -2,10 +2,10 @@ import Link from "next/link"
 import Image from "next/image"
 
 const categories = [
-  { name: "Clothing", image: "/placeholder.svg?height=300&width=300", href: "/category/clothing" },
-  { name: "Shoes", image: "/placeholder.svg?height=300&width=300", href: "/category/shoes" },
-  { name: "Accessories", image: "/placeholder.svg?height=300&width=300", href: "/category/accessories" },
-  { name: "Jewelry", image: "/placeholder.svg?height=300&width=300", href: "/category/jewelry" },
+  { name: "Clothing", image: "/globe.svg", href: "/category/clothing" },
+  { name: "Books", image: "/globe.svg", href: "/category/shoes" },
+  { name: "Electronics", image: "/globe.svg", href: "/category/accessories" },
+  { name: "Home Goods", image: "/globe.svg", href: "/category/jewelry" },
 ]
 
 export function Categories() {
@@ -18,12 +18,12 @@ export function Categories() {
           <Link key={category.name} href={category.href} className="group">
             <div className="relative aspect-square overflow-hidden rounded-lg">
               <Image
-                 src={"/vercel.svg"}
+                src={category.image}
                 alt={category.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black opacity-70 bg-opacity-30 flex items-center justify-center">
                 <h3 className="text-white text-xl font-bold">{category.name}</h3>
               </div>
             </div>

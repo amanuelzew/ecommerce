@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/pagination"
 import { ProductsQuery } from "@/gql/productsQuery"
 import { Product } from "@/types"
-import { useEffect, useState } from "react"
 import { useQuery } from "urql"
 
 interface ProductGridProps {
@@ -26,23 +25,26 @@ interface ProductGridProps {
   viewMode?: "grid" | "list",
   page?: number,
 }
+const PRODUCTPERPAGE=2
+const TOTALPRODUCTS=5
 export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid", page=-1 }: ProductGridProps) {
 
-
+  //const [products,setProducts]=useState([])
   //const [getProducts, replay] = useQuery({ query: ProductsQuery })
   const [{data,fetching,error}, replayy] = useQuery({
     query: ProductsQuery,
-    variables: {input:{ limit: 2, offset: (page-1) * 2 }}
+    variables: {input:{ limit: PRODUCTPERPAGE, offset: (page-1) * PRODUCTPERPAGE }}
   })
-  /* const{data:getProductsData,fetching:getProductsFetching,error:getProductsError}=getProducts
+  /* 
+  const{data:productsData,fetching:productsFetching,error:productsError}=getProducts
   const{data:getPaginatedProductsData,fetching:getPaginatedProductsFetching,error:getPaginatedProductsError}=getPaginatedProducts
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]) */
 
- /*  useEffect(() => {
-    if (getProductsData && getProductsData.products)
-      setProducts(getProductsData.products)
-  }, [getProductsData]) */
+ /* useEffect(() => {
+    if (productsData && productsData.products)
+      setProducts(productsData.products)
+  }, [productsData]) */
   /* useEffect(() => {
     if (getPaginatedProductsData && getPaginatedProductsData.products)
       setProducts(getPaginatedProductsData.products)
@@ -100,7 +102,7 @@ export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid
             .map((_, i) => <div key={i} className="rounded-lg bg-gray-100 animate-pulse h-80"></div>)}
       </div>
      {page>0&&
-      <Pagination>
+      <Pagination className="p-5">
         <PaginationContent>
           <PaginationItem >
             <PaginationPrevious href={`/products?page=${page-1}`}
@@ -112,14 +114,19 @@ export function ProductGrid({ filters, sortOption = "featured", viewMode = "grid
             />
           </PaginationItem>
           <PaginationItem>
-            <PaginationLink href="#">{page}</PaginationLink>
+            {Array.from({ length: Math.ceil(TOTALPRODUCTS/PRODUCTPERPAGE)}, (_, i) => i + 1).map((item,index)=>(
+             <PaginationLink href={`/products?page=${item}`} 
+             key={index}
+             isActive={page ==item}
+             >{item}</PaginationLink>
+            ))}
           </PaginationItem>
           <PaginationItem>
             <PaginationNext href={`/products?page=${page+1}`} 
-            aria-disabled={page >= 4/2}
-            tabIndex={page >= 4/2 ? -1 : undefined}
+            aria-disabled={page >= TOTALPRODUCTS/PRODUCTPERPAGE}
+            tabIndex={page >= TOTALPRODUCTS/PRODUCTPERPAGE ? -1 : undefined}
             className={
-              page >= 4/2 ? "pointer-events-none opacity-50" : undefined
+              page >= TOTALPRODUCTS/PRODUCTPERPAGE ? "pointer-events-none opacity-50" : undefined
             }
             />
           </PaginationItem>

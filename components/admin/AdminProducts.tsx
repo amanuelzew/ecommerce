@@ -1,19 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +10,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,32 +30,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { deleteProductMutation } from "@/gql/deleteProductMutation"
+import { ProductMutation } from "@/gql/ProductMutation"
+import { ProductsQuery } from "@/gql/productsQuery"
+import { updateProductMutation } from "@/gql/updateProductMutation"
+import { Product } from "@/types"
+import { Category } from "@prisma/client"
 import {
-  ChevronLeft,
-  ChevronRight,
   Download,
   MoreHorizontal,
   Plus,
   Search,
   SlidersHorizontal,
-  Trash2,
+  Trash2
 } from "lucide-react"
 import Image from "next/image"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useEffect, useState } from "react"
 import { useMutation, useQuery } from "urql"
-import { ProductsQuery } from "@/gql/productsQuery"
-import { Product } from "@/types"
-import { ProductMutation } from "@/gql/ProductMutation"
-import { updateProductMutation } from "@/gql/updateProductMutation"
-import { deleteProductMutation } from "@/gql/deleteProductMutation"
-import { Category } from "@prisma/client"
-import { searchProducts } from "@/lib/products"
 
 type NewProduct={
     name: string
@@ -66,7 +61,7 @@ type NewProduct={
     quantity:number
     category: Category
 }
-export default function Products() {
+export default function AdminProducts() {
   const [{data,error,fetching},replay]=useQuery({query:ProductsQuery})
   const [products,setProducts]=useState<Product[]>([])
   const [_,createProduct]=useMutation(ProductMutation)
@@ -76,7 +71,7 @@ export default function Products() {
     name: "",
     description: "",
     price: 0.0,
-    quantity:0,
+    quantity:1,
     category: Category.OTHER,
   })
 
@@ -122,7 +117,7 @@ export default function Products() {
     if(data && data.products){
       setProducts(data.products)
     }
-  },[])
+  },[data])
   // Open edit dialog with product data
   const openEditDialog = (product: any) => {
     setEditedProduct({ ...product })
@@ -171,7 +166,8 @@ export default function Products() {
                       min="0"
                       className="pl-7"
                       value={newProduct.price}
-                      onChange={(e) => setNewProduct({ ...newProduct, price:parseFloat(e.target.value) })}
+                      onChange={(e) => setNewProduct({ ...newProduct,
+                         price:e.target.value===""?0.01:parseFloat(e.target.value) })}
                       placeholder="0.00"
                     />
                   </div>
@@ -196,7 +192,7 @@ export default function Products() {
                     value={newProduct.category}
                     onValueChange={(value:Category) => setNewProduct({ ...newProduct, category: value })}
                   >
-                    <SelectTrigger id="category">
+                    <SelectTrigger id="category" className="w-full">
                       <SelectValue placeholder={Category.OTHER} />
                     </SelectTrigger>
                     <SelectContent>
@@ -209,6 +205,18 @@ export default function Products() {
                   </Select>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Quantity</Label>
+                    <Input
+                      id="quantity"
+                      type="number"
+                      min="1"
+                      value={newProduct.quantity}
+                      onChange={(e) => setNewProduct({ ...newProduct,
+                         quantity:e.target.value==""?1:parseInt(e.target.value)})}
+                      placeholder="1"
+                    />
+                </div>
               </div>
             </div>
 
@@ -423,8 +431,8 @@ export default function Products() {
                             className="pl-7"
                             value={editedProduct?.price}
                             onChange={(e) =>
-                              setEditedProduct({ ...editedProduct!, price: Number.parseFloat(e.target.value) })
-                            }
+                              setEditedProduct({ ...editedProduct!, 
+                                price:e.target.value===""?0.01:parseFloat(e.target.value) })}
                           />
                         </div>
                       </div>

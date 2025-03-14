@@ -3,12 +3,34 @@ import { Activity, CreditCard, DollarSign, Package, ShoppingCart, Users } from "
 import { RecentOrders } from "@/components/admin/RecentOrders"
 import { SalesChart } from "@/components/admin/SalesChart"
 import { TopProducts } from "@/components/admin/TopProducts"
+import db from "@/utils/db"
+const getTotalRevenue=async()=>{
+  const total= await db.order.aggregate({_sum:{total:true}})
+  return total._sum.total
+}
+const getTotalOrders=async()=>{
+  const total=await db.order.aggregate({_count:{id:true}})
+  return total._count.id
+}
+const getAverageOrder = async()=>{
+  const total=await db.order.aggregate({_avg:{total:true}})
+  return  total._avg.total
+}
+const getTotalProducts=async()=>{
+  const total=await db.product.aggregate({_count:{id:true}})
+  return  total._count.id
+}
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const totalRevenue=await getTotalRevenue()
+  const orders=await getTotalOrders()
+  const averageOrderValue=await getAverageOrder()
+  const products=await getTotalProducts()
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
 
+      {/* card stats */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -16,8 +38,8 @@ export default function AdminDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
-            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            <div className="text-2xl font-bold">${totalRevenue}</div>
+            <p className="text-xs text-muted-foreground">**+20.1% from last month**</p>
           </CardContent>
         </Card>
 
@@ -27,8 +49,8 @@ export default function AdminDashboard() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">+12.4% from last month</p>
+            <div className="text-2xl font-bold">{orders}</div>
+            <p className="text-xs text-muted-foreground">**+12.4% from last month**</p>
           </CardContent>
         </Card>
 
@@ -38,14 +60,14 @@ export default function AdminDashboard() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">256</div>
-            <p className="text-xs text-muted-foreground">+8 new products added</p>
+            <div className="text-2xl font-bold">{products}</div>
+            <p className="text-xs text-muted-foreground">**+8 new products added**</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <CardTitle className="text-sm font-medium">**Active Users**</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -56,12 +78,12 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">**Conversion Rate**</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3.2%</div>
-            <p className="text-xs text-muted-foreground">+0.5% from last month</p>
+            <p className="text-xs text-muted-foreground">**+0.5% from last month**</p>
           </CardContent>
         </Card>
 
@@ -71,16 +93,16 @@ export default function AdminDashboard() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$78.92</div>
-            <p className="text-xs text-muted-foreground">+$4.65 from last month</p>
+            <div className="text-2xl font-bold">${averageOrderValue?.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">**+$4.65 from last month**</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+      {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <SalesChart className="lg:col-span-4" />
         <TopProducts className="lg:col-span-3" />
-      </div>
+      </div> */}
 
       <RecentOrders />
     </div>

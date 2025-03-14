@@ -105,7 +105,7 @@ import { Product } from "@/types"
     discount: 0,
   },
 ] */
-const mockProducts: Product[] = [
+/* const mockProducts: Product[] = [
     {
       id: "1",
       name: "Classic White T-Shirt",
@@ -114,20 +114,7 @@ const mockProducts: Product[] = [
       quantity:1,
       category: "CLOTHING",
     }
-]
+] */
 
-export async function searchProducts(query: string): Promise<Product[]> {
- 
 
-  if (!query) return []
-
-  const lowerQuery = query.toLowerCase()
-
-  return mockProducts.filter(
-    (product) =>
-      product.name.toLowerCase().includes(lowerQuery) ||
-      product.description.toLowerCase().includes(lowerQuery) ||
-      product.category.toLowerCase().includes(lowerQuery),
-  )
-}
 

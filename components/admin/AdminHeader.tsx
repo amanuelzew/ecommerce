@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation"
 
 export function AdminHeader() {
   const [showSearch, setShowSearch] = useState(false)
-  const {removeUser}=useUserStore()
+  const { user, removeUser } = useUserStore()
   const router = useRouter()
 
   return (
@@ -89,7 +89,7 @@ export function AdminHeader() {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
-
+            {user&&
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
@@ -119,6 +119,7 @@ export function AdminHeader() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            }
           </div>
         </>
       )}

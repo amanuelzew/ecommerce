@@ -24,7 +24,7 @@ model User {
   firstName String
   lastName  String
   cart      Cart?
-  order     Order?
+  orders     Order[]
 }
 
 enum Category {
@@ -44,7 +44,7 @@ model Product {
   description String
   image String @default("")
   price       Float
-  quantity    Int
+  quantity    Int @default(1)
   category    Category   @default(OTHER)
   cartItems   CartItem[]
   orderItems  OrderItem[]
@@ -74,18 +74,17 @@ model Order{
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  userId    String     @unique
+  total Float @default(0.0)
+  userId    String     
   user      User       @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
 }
 
 model OrderItem {
+  id String   @id @default(uuid())
   orderId    String
   order      Order    @relation(fields: [orderId], references: [id])
   productId String
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
-
-  @@unique([orderId, productId])
 }

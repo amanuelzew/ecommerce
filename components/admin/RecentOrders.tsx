@@ -1,51 +1,11 @@
+"use client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-
-// Mock recent orders data
-const recentOrders = [
-  {
-    id: "ORD-001",
-    customer: "John Doe",
-    date: "2023-05-15",
-    total: 129.99,
-    status: "completed",
-    paymentStatus: "paid",
-  },
-  {
-    id: "ORD-002",
-    customer: "Jane Smith",
-    date: "2023-05-14",
-    total: 79.95,
-    status: "processing",
-    paymentStatus: "paid",
-  },
-  {
-    id: "ORD-003",
-    customer: "Robert Johnson",
-    date: "2023-05-13",
-    total: 249.5,
-    status: "completed",
-    paymentStatus: "paid",
-  },
-  {
-    id: "ORD-004",
-    customer: "Emily Davis",
-    date: "2023-05-12",
-    total: 59.99,
-    status: "shipped",
-    paymentStatus: "paid",
-  },
-  {
-    id: "ORD-005",
-    customer: "Michael Wilson",
-    date: "2023-05-11",
-    total: 149.95,
-    status: "pending",
-    paymentStatus: "pending",
-  },
-]
+import { useQuery } from "urql"
+import { orderQuery } from "@/gql/orderQuery"
+import { Order } from "@/types"
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -78,6 +38,7 @@ const getPaymentStatusVariant = (status: string) => {
 }
 
 export function RecentOrders() {
+  const [{ data, fetching, error }, replay] = useQuery({ query: orderQuery })
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -90,41 +51,48 @@ export function RecentOrders() {
         </Link>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Customer</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {recentOrders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell className="font-medium">
-                  <Link href={`/admin/orders/${order.id}`} className="hover:underline">
-                    {order.id}
-                  </Link>
-                </TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>${order.total.toFixed(2)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${getStatusColor(order.status)}`} />
-                    <span className="capitalize">{order.status}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getPaymentStatusVariant(order.paymentStatus)}>{order.paymentStatus}</Badge>
-                </TableCell>
+        {fetching ? (
+          <div className="border rounded-lg p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading Orders...</p>
+          </div>
+        ) :
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Payment</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {data.order.map((order: Order) => (
+                <TableRow key={order.id}>
+                  <TableCell className="font-medium">
+                    <Link href={`/admin/orders/${order.id}`} className="hover:underline">
+                      ORD-{order.id.slice(0, 3)}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{order.user.firstName + " " + order.user.lastName}</TableCell>
+                  <TableCell>{new Date(parseFloat(order.createdAt)).toDateString()}</TableCell>
+                  <TableCell>${order.total.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${getStatusColor("completed")}`} />
+                      <span className="capitalize">completed</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getPaymentStatusVariant("paid")}>Paid</Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        }
       </CardContent>
     </Card>
   )
