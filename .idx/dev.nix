@@ -10,6 +10,7 @@
     pkgs.nodePackages.pnpm
     pkgs.bun
     pkgs.openssl.dev
+    pkgs.turso-cli
   ];
   # Sets environment variables in the workspace
   env = {};

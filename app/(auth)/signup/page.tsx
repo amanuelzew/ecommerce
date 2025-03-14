@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import { useUserStore } from '@/context/userContext'
 import { useCartStore } from '@/context/cartContext'
+import Link from 'next/link'
 
 const SignupPage = () => {
     const { createUser } = useUserStore();
@@ -17,21 +18,21 @@ const SignupPage = () => {
     const [loading, setLoading] = useState(false)
 
     const handleSignup = async (e: FormEvent) => {
-        
+
         e.preventDefault()
         setLoading(true)
         const result = await signup({ input: state })
         if (result.data.signup) {
-          setToken(result.data.signup.token)
-          setState({ firstName: '', lastName: '', email: '', password: '' })
-          createUser({
-            firstName: result.data.signin.firstName,
-            lastName: result.data.signin.lastName,
-            email: result.data.signin.email,
-            isAdmin: result.data.signin.isAdmin,
-            cartId: result.data.signin.cart.id,
-          })
-          router.push('/')
+            setToken(result.data.signup.token)
+            setState({ firstName: '', lastName: '', email: '', password: '' })
+            createUser({
+                firstName: result.data.signin.firstName,
+                lastName: result.data.signin.lastName,
+                email: result.data.signin.email,
+                isAdmin: result.data.signin.isAdmin,
+                cartId: result.data.signin.cart.id,
+            })
+            router.push('/')
         }
     }
 
@@ -109,6 +110,14 @@ const SignupPage = () => {
                         {loading ? "Creating account..." : "Create account"}
                     </button>
                 </div>
+
+                <div className="text-center text-sm">
+                    Already have an account?{" "}
+                    <Link href="/signin" className="text-blue-600 hover:underline">
+                    sign in
+                    </Link>
+                </div>
+
             </form>
         </div>
     )

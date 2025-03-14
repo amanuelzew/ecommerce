@@ -44,6 +44,9 @@ const resolvers = {
             return cart[0]
         },
         order: async (_: any, __: any, ctx: GQLContext) => {
+            if(ctx.user?.isAdmin==true)
+                return db.order.findMany({include:{user:{select:{firstName:true,lastName:true}}}})
+            
             return await db.order.findMany(
                 {where:{userId:ctx.user?.id},
                 include:{user:{select:{firstName:true,lastName:true}}}

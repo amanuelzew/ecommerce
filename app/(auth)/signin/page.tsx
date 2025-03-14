@@ -7,9 +7,10 @@ import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 import { useUserStore } from '@/context/userContext'
 import { useCartStore } from '@/context/cartContext'
+import Link from 'next/link'
 
 
-const SignupPage = () => {
+const SigninPage = () => {
     const { createUser } = useUserStore();
     const { setCart } = useCartStore();
     const [_, signin] = useMutation(SigninMutation)
@@ -22,29 +23,29 @@ const SignupPage = () => {
         setLoading(true)
         const result = await signin({ input: state })
         if (result.data.signin) {
-          setToken(result.data.signin.token)
-          setState({ email: '', password: '' })
-          createUser({
-            firstName: result.data.signin.firstName,
-            lastName: result.data.signin.lastName,
-            email: result.data.signin.email,
-            isAdmin: result.data.signin.isAdmin,
-            cartId: result.data.signin.cart.id,
-          })
-          setCart(result.data.signin.cart)
-          if(result.data.signin.isAdmin==true)
-          router.push('/admin')
-          else
-          router.push('/')
+            setToken(result.data.signin.token)
+            setState({ email: '', password: '' })
+            createUser({
+                firstName: result.data.signin.firstName,
+                lastName: result.data.signin.lastName,
+                email: result.data.signin.email,
+                isAdmin: result.data.signin.isAdmin,
+                cartId: result.data.signin.cart.id,
+            })
+            setCart(result.data.signin.cart)
+            if (result.data.signin.isAdmin == true)
+                router.push('/admin')
+            else
+                router.push('/')
         }
     }
 
     return (
         <div className="bg-white rounded-md border p-4 w-full shadow-sm">
-            <div className="text-2xl text-black/70">Siin up</div>
+            <div className="text-2xl text-black/70">Sign in</div>
 
             <form onSubmit={handleSignup} className="flex flex-col gap-4 mt-4">
-                
+
 
                 <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium">
@@ -87,9 +88,16 @@ const SignupPage = () => {
                         {loading ? "Logging in..." : "Login"}
                     </button>
                 </div>
+
+                <div className="text-center text-sm">
+                    Don&apos;t have an account?{" "}
+                    <Link href="/signup" className="text-blue-600 hover:underline">
+                        Sign up
+                    </Link>
+                </div>
             </form>
         </div>
     )
 }
 
-export default SignupPage
+export default SigninPage
