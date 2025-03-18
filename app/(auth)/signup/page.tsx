@@ -1,17 +1,16 @@
 'use client'
 
-import { useMutation } from 'urql'
+import { useCartStore } from '@/context/cartContext'
+import { useUserStore } from '@/context/userContext'
 import { SignupMutation } from '@/gql/signupMutation'
 import { setToken } from '@/utils/token'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
-import { useUserStore } from '@/context/userContext'
-import { useCartStore } from '@/context/cartContext'
-import Link from 'next/link'
+import { useMutation } from 'urql'
 
 const SignupPage = () => {
     const { createUser } = useUserStore();
-    const { setCart } = useCartStore();
     const [_, signup] = useMutation(SignupMutation)
     const router = useRouter()
     const [state, setState] = useState({ firstName: '', lastName: '', email: '', password: '', })

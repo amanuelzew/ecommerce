@@ -1,9 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Activity, CreditCard, DollarSign, Package, ShoppingCart, Users } from "lucide-react"
 import { RecentOrders } from "@/components/admin/RecentOrders"
-import { SalesChart } from "@/components/admin/SalesChart"
-import { TopProducts } from "@/components/admin/TopProducts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import db from "@/utils/db"
+import { Activity, CreditCard, DollarSign, Package, ShoppingCart, Users } from "lucide-react"
 const getTotalRevenue=async()=>{
   const total= await db.order.aggregate({_sum:{total:true}})
   return total._sum.total
