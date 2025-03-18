@@ -64,9 +64,13 @@ export default function CartPage() {
   }
 
   const checkout = async () => {
+    
+    const randomFourDigits = Math.floor(1000 + Math.random() * 9000); 
+    const ref= `chewatatest-${randomFourDigits}`;
+    //negade-tx-12345678sss20612
     startTransition(()=>initializePayment({
       currency:"ETB",amount:subtotal.toString(),
-      tx_ref:"negade-tx-12345678sss332s",first_name:user?.firstName,last_name:user?.lastName,
+      tx_ref:ref,first_name:user?.firstName,last_name:user?.lastName,
       return_url:"https://3000-idx-ecommerce-1741264807708.cluster-rcyheetymngt4qx5fpswua3ry4.cloudworkstations.dev/orders"
     }))
     const result = await order()

@@ -5,9 +5,12 @@ This project is a lightweight, scalable e-commerce platform built using Next.js,
 ## Features
 
 -   user Authentication using JWT
--   CRUD on Product.
--   cart.
+-   CRUD on Product(ADMIN)
+-   View a list of products(with pagination)
+-   Add item to cart
+-   payment(TEST)
 -   order
+
 
 ## Tech Stack
 

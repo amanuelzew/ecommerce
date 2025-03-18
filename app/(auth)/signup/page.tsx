@@ -25,13 +25,15 @@ const SignupPage = () => {
         if (result.data.signup) {
             setToken(result.data.signup.token)
             setState({ firstName: '', lastName: '', email: '', password: '' })
+            console.log(result.data.firstName,"fro")
             createUser({
-                firstName: result.data.signin.firstName,
-                lastName: result.data.signin.lastName,
-                email: result.data.signin.email,
-                isAdmin: result.data.signin.isAdmin,
-                cartId: result.data.signin.cart.id,
+                firstName: result.data.signup.firstName,
+                lastName: result.data.signup.lastName,
+                email: result.data.signup.email,
+                isAdmin: result.data.signup.isAdmin,
+                cartId: result.data.signup.cart.id,
             })
+            console.log(result.data.firstName,"las")
             router.push('/')
         }
     }

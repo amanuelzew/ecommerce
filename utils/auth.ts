@@ -77,11 +77,16 @@ export const signup = async ({
       password: hashpwd,
       firstName: firstName,
       lastName: lastName,
+      cart:{create:{}}
     },
   });
-  await db.cart.create({data:{userId:user.id}})
+  const userWithCart = await db.user.findUnique({
+    where: { id: user.id },
+    include: { cart: true },
+  });
+  //await db.cart.create({data:{userId:user.id}})
   const token = createTokenForUser(user.id);
-  return { user, token };
+  return { userWithCart, token };
 };
 
 export const hashPassword = (password: string) => {

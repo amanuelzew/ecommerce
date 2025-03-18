@@ -64,10 +64,10 @@ const resolvers = {
         },
         signup: async (_: any, { input }: { input: signupUserInput }) => {
             const data = await signup(input)
-            if (!data || !data.user || !data.token) {
+            if (!data || !data.userWithCart || !data.token) {
                 throw new GraphQLError("unauthorized", { extensions: { code: "401" } })
             }
-            return { ...data.user, token: data.token }
+            return { ...data.userWithCart, token: data.token }
         },
         createProduct: async (_: any, { input }: { input: createProductInput }, ctx: GQLContext) => {
             if (!ctx.user) {
