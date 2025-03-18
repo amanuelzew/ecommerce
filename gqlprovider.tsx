@@ -13,7 +13,7 @@ import { cacheExchange } from '@urql/exchange-graphcache'
 import { getToken } from '@/utils/token'
 
 export default function GQLProvider({ children }: PropsWithChildren) {
-  const url = process.env.APP_URL ?? 'https://3000-idx-ecommerce-1741264807708.cluster-rcyheetymngt4qx5fpswua3ry4.cloudworkstations.dev/api/graphql'
+  const url = process.env.APP_URL ?? 'https://ecommerce-pi-blond.vercel.app/api/graphql'
   const [client, ssr] = useMemo(() => {
     const ssr = ssrExchange({
       isClient: typeof window !== 'undefined',
