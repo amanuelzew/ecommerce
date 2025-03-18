@@ -71,7 +71,7 @@ export default function CartPage() {
     startTransition(()=>initializePayment({
       currency:"ETB",amount:subtotal.toString(),
       tx_ref:ref,first_name:user?.firstName,last_name:user?.lastName,
-      return_url:"https://3000-idx-ecommerce-1741264807708.cluster-rcyheetymngt4qx5fpswua3ry4.cloudworkstations.dev/orders"
+      return_url:"https://ecommerce-pi-blond.vercel.app/orders"
     }))
     const result = await order()
     if (result.data.createOrder) {
